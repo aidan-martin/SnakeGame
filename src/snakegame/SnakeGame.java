@@ -5,6 +5,8 @@
  */
 package snakegame;
 
+import environment.ApplicationStarter;
+
 /**
  *
  * @author aidanmartin
@@ -15,7 +17,7 @@ public class SnakeGame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        ApplicationStarter.run("Snake Game", new Jungle());
     }
     
 }
