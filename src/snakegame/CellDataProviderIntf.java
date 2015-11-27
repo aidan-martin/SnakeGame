@@ -5,19 +5,18 @@
  */
 package snakegame;
 
-import environment.ApplicationStarter;
-
 /**
  *
  * @author aidanmartin
  */
-public class SnakeGame {
+public interface CellDataProviderIntf {
+    
+    public int getCellWidth();
+    public int getCellHeight();
+    
+    public int getSystemCoordX(int x, int y);
+    public int getSystemCoordY(int x, int y);
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        ApplicationStarter.run("Snake Game", new HauntedHouse());
-    }
+
     
 }
