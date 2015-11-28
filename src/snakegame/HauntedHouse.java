@@ -9,6 +9,7 @@ import environment.Environment;
 import grid.Grid;
 import images.ResourceTools;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -20,29 +21,28 @@ import java.util.ArrayList;
  *
  * @author aidanmartin
  */
-class HauntedHouse extends Environment implements CellDataProviderIntf, MoveValidatorIntf{
+class HauntedHouse extends Environment implements CellDataProviderIntf, MoveValidatorIntf {
 
-   private Grid grid;
-   Image ghost;
-   Image background;
-   private ArrayList<Barrier> barriers;
-   
-
+    private Grid grid;
+    Image ghost;
+    Image background;
+    Image startScreen;
+    private ArrayList<Barrier> barriers;
+    private Screen screens = Screen.START;
 
     public HauntedHouse() {
         grid = new Grid(15, 15, 35, 35, new Point(150, 50), Color.BLACK);
         ghost = ResourceTools.loadImageFromResource("snakegame/ghost.gif");
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
-        
-        barriers = new ArrayList<>();
-        barriers.add(new Barrier(0, 0, Color.pink, this));
-        barriers.add(new Barrier(1, 0, Color.pink, this));
-        barriers.add(new Barrier(2, 0, Color.pink, this));
-        barriers.add(new Barrier(3, 0, Color.pink, this));
-        barriers.add(new Barrier(4, 0, Color.pink, this));
-        barriers.add(new Barrier(5, 0, Color.pink, this));
+        startScreen = ResourceTools.loadImageFromResource("snakegame/hauntedhouse2.jpg");
 
-
+//        barriers = new ArrayList<>();
+//        barriers.add(new Barrier(0, 0, Color.pink, this));
+//        barriers.add(new Barrier(1, 0, Color.pink, this));
+//        barriers.add(new Barrier(2, 0, Color.pink, this));
+//        barriers.add(new Barrier(3, 0, Color.pink, this));
+//        barriers.add(new Barrier(4, 0, Color.pink, this));
+//        barriers.add(new Barrier(5, 0, Color.pink, this));
     }
 
     @Override
@@ -67,6 +67,10 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 //        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 //            System.out.println("Go Right!");
 //        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            screens = Screen.PLAY;
+            
+        }
     }
 
     @Override
@@ -93,52 +97,65 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     @Override
     public void paintEnvironment(Graphics graphics) {
 
-        graphics.drawImage(background, 0, 0, 1000, 800, this);
-        {
+        switch (screens) {
+            case START:
+                
+                graphics.drawImage(startScreen, 0, 0, 970, 700, this);
+                graphics.setFont(new Font ("Herculanum", Font.PLAIN, 42));
+                graphics.drawString("Press space to start.", 40, 70);
+                
+                break;
+
+            case PLAY:
+
+                graphics.drawImage(background, 0, 0, 1000, 800, this);
+                 {
+
+                }
+                if (grid != null) {
+                    grid.paintComponent(graphics);
+                }
+                graphics.drawImage(ghost, 200, 300, 80, 80, this);
+
+                if (barriers != null) {
+                    for (int i = 0; i < barriers.size(); i++) {
+                        barriers.get(i).draw(graphics);
+                    }
+                    break;
+
+                }
 
         }
-        if (grid != null) {
-            grid.paintComponent(graphics);
-        }
-        graphics.drawImage(ghost, 200, 300, 80, 80, this);
 
-        if (barriers != null) {
-            for (int i = 0; i < barriers.size(); i++) {
-                barriers.get(i).draw(graphics);
-            }
-//            barriers.draw(graphics);
-        }
-        
 //<editor-fold defaultstate="collapsed" desc="CellDataProviderIntf">
     }
-    
+
     @Override
     public int getCellWidth() {
         return grid.getCellWidth();
     }
-    
+
     @Override
     public int getCellHeight() {
         return grid.getCellHeight();
     }
-    
+
     @Override
     public int getSystemCoordX(int x, int y) {
         return grid.getCellSystemCoordinate(x, y).x;
     }
-    
+
     @Override
     public int getSystemCoordY(int x, int y) {
         return grid.getCellSystemCoordinate(x, y).y;
-        
-        
+
     }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="MoveValidatorIntf">
     @Override
     public Point validateMove(Point proposedLocation) {
-       return proposedLocation; 
+        return proposedLocation;
     }
 //</editor-fold>
 
