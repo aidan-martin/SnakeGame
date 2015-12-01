@@ -17,7 +17,7 @@ public class SnakeGame {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        ApplicationStarter.run("Snake Game", new HauntedHouse());
+        ApplicationStarter.run("Casper", new HauntedHouse());
     }
     
 }

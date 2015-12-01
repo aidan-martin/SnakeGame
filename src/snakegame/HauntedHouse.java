@@ -5,6 +5,7 @@
  */
 package snakegame;
 
+import environment.Direction;
 import environment.Environment;
 import grid.Grid;
 import images.ResourceTools;
@@ -24,15 +25,15 @@ import java.util.ArrayList;
 class HauntedHouse extends Environment implements CellDataProviderIntf, MoveValidatorIntf {
 
     private Grid grid;
-    Image ghost;
     Image background;
     Image startScreen;
     private ArrayList<Barrier> barriers;
     private Screen screens = Screen.START;
+    private GhostCharacter casper;
 
     public HauntedHouse() {
         grid = new Grid(15, 15, 35, 35, new Point(150, 50), Color.BLACK);
-        ghost = ResourceTools.loadImageFromResource("snakegame/ghost.gif");
+        casper = new GhostCharacter(3, 4, Direction.DOWN, this);
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
         startScreen = ResourceTools.loadImageFromResource("snakegame/hauntedhouse2.jpg");
 
@@ -49,27 +50,56 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     public void initializeEnvironment() {
     }
 
-    int counter;
+    private final int limit_SLOW = 8;
+    private final int limit_MEDIUM = 5;
+    private final int limit_FAST = 3;
+    private final int limit_EXTREME = 1;
+
+    private int counter;
+    private int limit = limit_MEDIUM;
 
     @Override
     public void timerTaskHandler() {
-//        System.out.println("Hey dude. " + ++counter);
+
+        if (casper != null) {
+
+            if (counter < limit) {
+                counter++;
+            } else {
+                casper.move();
+                counter = 0;
+
+            }
+        }
     }
 
     @Override
     public void keyPressedHandler(KeyEvent e) {
-//        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-//            System.out.println("Go Left!");
-//        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-//            System.out.println("Go Down!");
-//        } else if (e.getKeyCode() == KeyEvent.VK_UP) {
-//            System.out.println("Go Up!");
-//        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-//            System.out.println("Go Right!");
-//        }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            casper.setDirection(Direction.LEFT);
+
+        } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            casper.setDirection(Direction.DOWN);
+
+        } else if (e.getKeyCode() == KeyEvent.VK_UP) {
+            casper.setDirection(Direction.UP);
+        } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            casper.setDirection(Direction.RIGHT);
+        } else if (e.getKeyCode() == KeyEvent.VK_1) {
+                this.limit = limit_SLOW;
+        } else if (e.getKeyCode() == KeyEvent.VK_2) {
+                this.limit = limit_MEDIUM;
+        } else if (e.getKeyCode() == KeyEvent.VK_3) {
+                this.limit = limit_FAST;
+        } else if (e.getKeyCode() == KeyEvent.VK_4) {
+                this.limit = limit_EXTREME;
+            }
+        
+
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             screens = Screen.PLAY;
-            
+
         }
     }
 
@@ -89,8 +119,8 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
     @Override
     public void environmentMouseClicked(MouseEvent e) {
-        System.out.println("Mouse clicked at " + e.getPoint());
-        System.out.println("Mouse clicked in cell " + grid.getCellLocationFromSystemCoordinate(e.getPoint()));
+//        System.out.println("Mouse clicked at " + e.getPoint());
+//        System.out.println("Mouse clicked in cell " + grid.getCellLocationFromSystemCoordinate(e.getPoint()));
 
     }
 
@@ -99,11 +129,11 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
         switch (screens) {
             case START:
-                
+
                 graphics.drawImage(startScreen, 0, 0, 970, 700, this);
-                graphics.setFont(new Font ("Herculanum", Font.PLAIN, 42));
+                graphics.setFont(new Font("Herculanum", Font.PLAIN, 42));
                 graphics.drawString("Press space to start.", 40, 70);
-                
+
                 break;
 
             case PLAY:
@@ -115,14 +145,16 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                 if (grid != null) {
                     grid.paintComponent(graphics);
                 }
-                graphics.drawImage(ghost, 200, 300, 80, 80, this);
+//                graphics.drawImage(ghost, 200, 300, 80, 80, this);
 
                 if (barriers != null) {
                     for (int i = 0; i < barriers.size(); i++) {
                         barriers.get(i).draw(graphics);
                     }
                     break;
-
+                }
+                if (casper != null) {
+                    casper.draw(graphics);
                 }
 
         }

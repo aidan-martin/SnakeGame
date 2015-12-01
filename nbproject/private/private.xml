@@ -5,9 +5,9 @@
         <group>
             <file>file:/Users/aidanmartin/NetBeansProjects/SnakeGame/src/snakegame/Barrier.java</file>
             <file>file:/Users/aidanmartin/NetBeansProjects/SnakeGame/src/snakegame/SnakeGame.java</file>
+            <file>file:/Users/aidanmartin/NetBeansProjects/SnakeGame/src/snakegame/Screen.java</file>
+            <file>file:/Users/aidanmartin/NetBeansProjects/SnakeGame/src/snakegame/GhostCharacter.java</file>
             <file>file:/Users/aidanmartin/NetBeansProjects/SnakeGame/src/snakegame/HauntedHouse.java</file>
-            <file>file:/Users/aidanmartin/NetBeansProjects/SnakeGame/src/snakegame/CellDataProviderIntf.java</file>
-            <file>file:/Users/aidanmartin/NetBeansProjects/SnakeGame/src/snakegame/MoveValidatorIntf.java</file>
         </group>
     </open-files>
 </project-private>
