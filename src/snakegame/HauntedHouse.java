@@ -31,11 +31,13 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     private Screen screens = Screen.START;
     private GhostCharacter casper;
 
+
     public HauntedHouse() {
         grid = new Grid(15, 15, 35, 35, new Point(150, 50), Color.BLACK);
         casper = new GhostCharacter(3, 4, Direction.DOWN, this);
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
         startScreen = ResourceTools.loadImageFromResource("snakegame/hauntedhouse2.jpg");
+        
 
 //        barriers = new ArrayList<>();
 //        barriers.add(new Barrier(0, 0, Color.pink, this));
@@ -87,15 +89,14 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             casper.setDirection(Direction.RIGHT);
         } else if (e.getKeyCode() == KeyEvent.VK_1) {
-                this.limit = limit_SLOW;
+            this.limit = limit_SLOW;
         } else if (e.getKeyCode() == KeyEvent.VK_2) {
-                this.limit = limit_MEDIUM;
+            this.limit = limit_MEDIUM;
         } else if (e.getKeyCode() == KeyEvent.VK_3) {
-                this.limit = limit_FAST;
+            this.limit = limit_FAST;
         } else if (e.getKeyCode() == KeyEvent.VK_4) {
-                this.limit = limit_EXTREME;
-            }
-        
+            this.limit = limit_EXTREME;
+        }
 
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             screens = Screen.PLAY;
