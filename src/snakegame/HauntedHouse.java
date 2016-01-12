@@ -5,6 +5,7 @@
  */
 package snakegame;
 
+import audio.AudioPlayer;
 import environment.Direction;
 import environment.Environment;
 import grid.Grid;
@@ -28,25 +29,33 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     Image background;
     Image startScreen;
     private ArrayList<Barrier> barriers;
+    private ArrayList<Item> items;
     private Screen screens = Screen.START;
     private GhostCharacter casper;
-
-
+    private int itemsX = 10;
+    private int itemsY = 5;
+         
     public HauntedHouse() {
         grid = new Grid(15, 15, 35, 35, new Point(150, 50), Color.BLACK);
         casper = new GhostCharacter(3, 4, Direction.DOWN, this);
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
         startScreen = ResourceTools.loadImageFromResource("snakegame/hauntedhouse2.jpg");
         
-
+          items = new ArrayList<>();
+          items.add(new Item(itemsX, itemsY, ":(", ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
+          items.add(new Item(12, 5, ":)", ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
+          
 //        barriers = new ArrayList<>();
-//        barriers.add(new Barrier(0, 0, Color.pink, this));
-//        barriers.add(new Barrier(1, 0, Color.pink, this));
-//        barriers.add(new Barrier(2, 0, Color.pink, this));
-//        barriers.add(new Barrier(3, 0, Color.pink, this));
-//        barriers.add(new Barrier(4, 0, Color.pink, this));
-//        barriers.add(new Barrier(5, 0, Color.pink, this));
+
     }
+    
+    public void checkIntersection(){
+        //check if casper is in same cell as item
+        //if casper runs into items, items disappear
+
+            
+        }
+    
 
     @Override
     public void initializeEnvironment() {
@@ -74,7 +83,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
             }
         }
     }
-
+    
     @Override
     public void keyPressedHandler(KeyEvent e) {
 
@@ -102,46 +111,37 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
             screens = Screen.PLAY;
 
         }
+        if (e.getKeyCode() == KeyEvent.VK_F) {
+//            AudioPlayer.play("/snakegame/Portal.wav");
     }
-
+    }
     @Override
     public void keyReleasedHandler(KeyEvent e) {
-//        if (e.getKeyCode() == KeyEvent.VK_W) {
-//            System.out.println("Go UP!");
-//        } else if (e.getKeyCode() == KeyEvent.VK_A) {
-//            System.out.println("Go LEFT!");
-//        } else if (e.getKeyCode() == KeyEvent.VK_S) {
-//            System.out.println("Go DOWN!");
-//        } else if (e.getKeyCode() == KeyEvent.VK_D) {
-//            System.out.println("GO RIGHT!");
-//        }
 
     }
 
     @Override
     public void environmentMouseClicked(MouseEvent e) {
-//        System.out.println("Mouse clicked at " + e.getPoint());
-//        System.out.println("Mouse clicked in cell " + grid.getCellLocationFromSystemCoordinate(e.getPoint()));
 
     }
 
     @Override
     public void paintEnvironment(Graphics graphics) {
-
+        
         switch (screens) {
             case START:
-
+                
                 graphics.drawImage(startScreen, 0, 0, 970, 700, this);
                 graphics.setFont(new Font("Herculanum", Font.PLAIN, 42));
                 graphics.drawString("Press space to start.", 40, 70);
-
+                
                 break;
-
+            
             case PLAY:
-
+                
                 graphics.drawImage(background, 0, 0, 1000, 800, this);
                  {
-
+                    
                 }
                 if (grid != null) {
                     grid.paintComponent(graphics);
@@ -157,8 +157,13 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                 if (casper != null) {
                     casper.draw(graphics);
                 }
-
+                if (items != null) {
+                    for (int i = 0; i < items.size(); i++) {
+                        items.get(i).draw(graphics);
+                    }
+                }
         }
+        
 
 //<editor-fold defaultstate="collapsed" desc="CellDataProviderIntf">
     }

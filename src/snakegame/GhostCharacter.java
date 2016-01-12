@@ -11,6 +11,7 @@ import images.ImageManager;
 import images.ResourceTools;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.util.ArrayList;
 
 /**
@@ -85,7 +86,7 @@ public class GhostCharacter {
         rightImages.add(GHOST_RIGHT_02);
         rightImages.add(GHOST_RIGHT_03);
                 
-        animator = new Animator(im, frontImages, 200);
+        animator = new Animator(im, frontImages, 400);
     }
     
     Animator animator;
@@ -117,6 +118,7 @@ public class GhostCharacter {
     private Image image;
     private Image sprite1, sprite2, sprite3, sprite4, sprite5, sprite6, 
                   sprite7, sprite8, sprite9, sprite10, sprite11, sprite12;
+    private Point location;
     
     private CellDataProviderIntf cellData;
 
@@ -190,4 +192,18 @@ public class GhostCharacter {
         this.image = image;
     }
 //</editor-fold>
+
+    /**
+     * @return the location
+     */
+    public Point getLocation() {
+        return location;
+    }
+
+    /**
+     * @param location the location to set
+     */
+    public void setLocation(Point location) {
+        this.location = location;
+    }
 }
