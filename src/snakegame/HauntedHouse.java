@@ -30,32 +30,29 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     Image startScreen;
     private ArrayList<Barrier> barriers;
     private ArrayList<Item> items;
+    private ArrayList<Item> portals;
     private Screen screens = Screen.START;
     private GhostCharacter casper;
     private int itemsX = 10;
     private int itemsY = 5;
-         
+
+    private static final String POISON_ITEM = "POISON";
+    private static final String POTION_ITEM = "POTION";
+
     public HauntedHouse() {
+        paused = true;
+
         grid = new Grid(15, 15, 35, 35, new Point(150, 50), Color.BLACK);
-        casper = new GhostCharacter(3, 4, Direction.DOWN, this);
+        casper = new GhostCharacter(3, 4, Direction.DOWN, this, this);
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
         startScreen = ResourceTools.loadImageFromResource("snakegame/hauntedhouse2.jpg");
-        
-          items = new ArrayList<>();
-          items.add(new Item(itemsX, itemsY, ":(", ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
-          items.add(new Item(12, 5, ":)", ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
-          
+
+        items = new ArrayList<>();
+        items.add(new Item(itemsX, itemsY, POISON_ITEM, ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
+        items.add(new Item(12, 5, POTION_ITEM, ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
+
 //        barriers = new ArrayList<>();
-
     }
-    
-    public void checkIntersection(){
-        //check if casper is in same cell as item
-        //if casper runs into items, items disappear
-
-            
-        }
-    
 
     @Override
     public void initializeEnvironment() {
@@ -68,22 +65,24 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
     private int counter;
     private int limit = limit_MEDIUM;
+    private boolean paused = false;
 
     @Override
     public void timerTaskHandler() {
+        if (!paused) {
+            if (casper != null) {
 
-        if (casper != null) {
+                if (counter < limit) {
+                    counter++;
+                } else {
+                    casper.move();
+                    counter = 0;
 
-            if (counter < limit) {
-                counter++;
-            } else {
-                casper.move();
-                counter = 0;
-
+                }
             }
         }
     }
-    
+
     @Override
     public void keyPressedHandler(KeyEvent e) {
 
@@ -105,6 +104,8 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
             this.limit = limit_FAST;
         } else if (e.getKeyCode() == KeyEvent.VK_4) {
             this.limit = limit_EXTREME;
+        } else if (e.getKeyCode() == KeyEvent.VK_P) {
+            this.paused = !this.paused;
         }
 
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -112,9 +113,10 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
         }
         if (e.getKeyCode() == KeyEvent.VK_F) {
-//            AudioPlayer.play("/snakegame/Portal.wav");
+            AudioPlayer.play("/snakegame/Portal.wav");
+        }
     }
-    }
+
     @Override
     public void keyReleasedHandler(KeyEvent e) {
 
@@ -127,21 +129,21 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
     @Override
     public void paintEnvironment(Graphics graphics) {
-        
+
         switch (screens) {
             case START:
-                
+
                 graphics.drawImage(startScreen, 0, 0, 970, 700, this);
                 graphics.setFont(new Font("Herculanum", Font.PLAIN, 42));
                 graphics.drawString("Press space to start.", 40, 70);
-                
+
                 break;
-            
+
             case PLAY:
-                
+
                 graphics.drawImage(background, 0, 0, 1000, 800, this);
                  {
-                    
+
                 }
                 if (grid != null) {
                     grid.paintComponent(graphics);
@@ -163,7 +165,6 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                     }
                 }
         }
-        
 
 //<editor-fold defaultstate="collapsed" desc="CellDataProviderIntf">
     }
@@ -193,7 +194,43 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 //<editor-fold defaultstate="collapsed" desc="MoveValidatorIntf">
     @Override
     public Point validateMove(Point proposedLocation) {
-        return proposedLocation;
+        if (proposedLocation.x < 0) {
+            System.out.println("LOST TO THE LEFT...");
+        } else if (proposedLocation.x >= grid.getColumns()) {
+            System.out.println("LOST TO THE RIGHT...");
+        } else if (proposedLocation.y >= grid.getRows()) {
+            System.out.println("LOST TO THE BOTTOM...");
+        } else if (proposedLocation.y < 0) {
+            System.out.println("LOST TO THE TOP...");
+        }
+
+        return checkIntersection(proposedLocation);
+    }
+
+    public Point checkIntersection(Point location) {
+        //check if casper is in same cell as item
+        //if casper runs into items, items disappear (collect)
+        // get points? lose points?
+        // portal - adjust location?
+        if (items != null) {
+            for (Item item : items) {
+                if (item.getLocation().equals(location)) {
+                //stepped on an item!
+                    //if POISON => subtract points
+                    //if POTION => add points
+                    if (item.getType().equals(POISON_ITEM)) {
+                        System.out.println("SUBTRACTING....");
+                    } else if (item.getType().equals(POTION_ITEM)) {
+                        System.out.println("ADDING..");
+                    }
+
+                    //move item
+                    item.setX(-1000);
+                    //make a funny noise
+                }
+            }
+        }
+        return location;
     }
 //</editor-fold>
 

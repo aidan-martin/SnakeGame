@@ -40,7 +40,6 @@ public class Item {
     private String type;
     private Image image;
     private final CellDataProviderIntf cellData;
-    private Point location;
     
     /**
      * @return the x
@@ -104,20 +103,21 @@ public class Item {
     public CellDataProviderIntf getCellData() {
         return cellData;
     }
-//</editor-fold>
 
     /**
      * @return the location
      */
     public Point getLocation() {
-        return location;
+        return new Point(x, y);
     }
 
     /**
      * @param location the location to set
      */
     public void setLocation(Point location) {
-        this.location = location;
+        this.x = location.x;
+        this.y = location.y;
     }
+//</editor-fold>
     
 }

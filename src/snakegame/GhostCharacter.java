@@ -21,15 +21,23 @@ import java.util.ArrayList;
 public class GhostCharacter {
 
     public void move() {
+        int xNew = x;
+        int yNew = y;
+        
         if (direction == Direction.LEFT) {
-            x--;
+            xNew--;
         } else if (direction == Direction.RIGHT) {
-            x++;
+            xNew++;
         } else if (direction == Direction.UP) {
-            y--;
+            yNew--;
         } else if (direction == Direction.DOWN) {
-            y++;
+            yNew++;
         }
+
+        Point newLoc = moveValidator.validateMove(new Point(xNew, yNew));
+        x = newLoc.x;
+        y = newLoc.y;
+        
     }
 
     public void draw(Graphics graphics) {
@@ -41,11 +49,12 @@ public class GhostCharacter {
         
     }
 
-    public GhostCharacter(int x, int y, Direction direction, CellDataProviderIntf cellData) {
+    public GhostCharacter(int x, int y, Direction direction, CellDataProviderIntf cellData, MoveValidatorIntf moveValidator) {
         this.x = x;
         this.y = y;
         this.direction = direction;
         this.cellData = cellData;
+        this.moveValidator = moveValidator;
 
         
         ImageManager im = new ImageManager();
@@ -120,7 +129,11 @@ public class GhostCharacter {
                   sprite7, sprite8, sprite9, sprite10, sprite11, sprite12;
     private Point location;
     
-    private CellDataProviderIntf cellData;
+    private final CellDataProviderIntf cellData;
+    private final MoveValidatorIntf moveValidator;
+//    private Point location;
+//    private CellDataProviderIntf cellData;
+
 
     /**
      * @return the x
@@ -139,10 +152,10 @@ public class GhostCharacter {
     /**
      * @return the y
      */
-    public int getY() {
+    public int getY() {    
         return y;
     }
-
+    
     /**
      * @param y the y to set
      */
