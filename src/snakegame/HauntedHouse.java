@@ -25,16 +25,19 @@ import java.util.ArrayList;
  */
 class HauntedHouse extends Environment implements CellDataProviderIntf, MoveValidatorIntf {
 
-    private Grid grid;
+    private final Grid grid;
     Image background;
     Image startScreen;
+    private final PointSystem score;
     private ArrayList<Barrier> barriers;
-    private ArrayList<Item> items;
-    private ArrayList<Item> portals;
+    private final ArrayList<Item> items;
+    private final ArrayList<Item> portals;
     private Screen screens = Screen.START;
-    private GhostCharacter casper;
-    private int itemsX = 10;
-    private int itemsY = 5;
+    private final GhostCharacter casper;
+    private final int itemsX = 10;
+    private final int itemsY = 5;
+//    private int portalX = 2;
+//    private int portalY = 4;
 
     private static final String POISON_ITEM = "POISON";
     private static final String POTION_ITEM = "POTION";
@@ -44,6 +47,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
         grid = new Grid(15, 15, 35, 35, new Point(150, 50), Color.BLACK);
         casper = new GhostCharacter(3, 4, Direction.DOWN, this, this);
+        score = new PointSystem();
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
         startScreen = ResourceTools.loadImageFromResource("snakegame/hauntedhouse2.jpg");
 
@@ -51,7 +55,9 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         items.add(new Item(itemsX, itemsY, POISON_ITEM, ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
         items.add(new Item(12, 5, POTION_ITEM, ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
 
-//        barriers = new ArrayList<>();
+        portals = new ArrayList<>();
+//        portals.add(new Portal(portalX, portalY, ));
+
     }
 
     @Override
@@ -91,7 +97,6 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             casper.setDirection(Direction.DOWN);
-
         } else if (e.getKeyCode() == KeyEvent.VK_UP) {
             casper.setDirection(Direction.UP);
         } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -104,6 +109,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
             this.limit = limit_FAST;
         } else if (e.getKeyCode() == KeyEvent.VK_4) {
             this.limit = limit_EXTREME;
+
         } else if (e.getKeyCode() == KeyEvent.VK_P) {
             this.paused = !this.paused;
         }
@@ -142,13 +148,14 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
             case PLAY:
 
                 graphics.drawImage(background, 0, 0, 1000, 800, this);
-                 {
+
+                if (score != null) {
+                    score.drawScore(graphics);
 
                 }
                 if (grid != null) {
                     grid.paintComponent(graphics);
                 }
-//                graphics.drawImage(ghost, 200, 300, 80, 80, this);
 
                 if (barriers != null) {
                     for (int i = 0; i < barriers.size(); i++) {
@@ -215,7 +222,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         if (items != null) {
             for (Item item : items) {
                 if (item.getLocation().equals(location)) {
-                //stepped on an item!
+                    //stepped on an item!
                     //if POISON => subtract points
                     //if POTION => add points
                     if (item.getType().equals(POISON_ITEM)) {
@@ -223,7 +230,6 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                     } else if (item.getType().equals(POTION_ITEM)) {
                         System.out.println("ADDING..");
                     }
-
                     //move item
                     item.setX(-1000);
                     //make a funny noise
