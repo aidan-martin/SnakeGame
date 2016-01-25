@@ -10,6 +10,6 @@ package snakegame;
  * @author aidanmartin
  */
 public enum Screen {
-    START, PLAY, PAUSEMENU
+    START, PLAY, PAUSEMENU, DEATH;
     
 }

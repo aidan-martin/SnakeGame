@@ -31,16 +31,9 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     private final PointSystem score;
     private ArrayList<Barrier> barriers;
     private final ArrayList<Item> items;
-    private final ArrayList<Item> portals;
     private Screen screens = Screen.START;
     private final GhostCharacter casper;
-    private final int itemsX = 10;
-    private final int itemsY = 5;
-//    private int portalX = 2;
-//    private int portalY = 4;
 
-    private static final String POISON_ITEM = "POISON";
-    private static final String POTION_ITEM = "POTION";
 
     public HauntedHouse() {
         paused = true;
@@ -52,49 +45,51 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         startScreen = ResourceTools.loadImageFromResource("snakegame/hauntedhouse2.jpg");
 
         items = new ArrayList<>();
-        items.add(new Item(itemsX, itemsY, POISON_ITEM, ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
-        items.add(new Item(12, 5, POTION_ITEM, ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
-
-        portals = new ArrayList<>();
-//        portals.add(new Portal(portalX, portalY, ));
-
+        items.add(new Item(3, 7, Item.ITEM_TYPE_POISON, ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
+        items.add(new Item(12, 5, Item.ITEM_TYPE_POTION, ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
+        items.add(new Item(5, 6, Item.ITEM_TYPE_PORTAL, ResourceTools.loadImageFromResource("snakegame/portal_1.png"), this));
     }
-
+//<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
+    
     @Override
     public void initializeEnvironment() {
     }
-
+    
     private final int limit_SLOW = 8;
     private final int limit_MEDIUM = 5;
     private final int limit_FAST = 3;
     private final int limit_EXTREME = 1;
-
+    
     private int counter;
     private int limit = limit_MEDIUM;
     private boolean paused = false;
-
+//</editor-fold>
+    
+//<editor-fold defaultstate="collapsed" desc="timerTaskHandler">
+    
     @Override
     public void timerTaskHandler() {
         if (!paused) {
             if (casper != null) {
-
                 if (counter < limit) {
                     counter++;
                 } else {
                     casper.move();
                     counter = 0;
-
                 }
             }
         }
     }
-
+//</editor-fold>
+    
+//<editor-fold defaultstate="collapsed" desc="keyPressedHandler">
+    
     @Override
     public void keyPressedHandler(KeyEvent e) {
-
+        
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             casper.setDirection(Direction.LEFT);
-
+            
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             casper.setDirection(Direction.DOWN);
         } else if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -109,58 +104,65 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
             this.limit = limit_FAST;
         } else if (e.getKeyCode() == KeyEvent.VK_4) {
             this.limit = limit_EXTREME;
-
+            
         } else if (e.getKeyCode() == KeyEvent.VK_P) {
             this.paused = !this.paused;
         }
-
+        
         if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             screens = Screen.PLAY;
-
+            
         }
         if (e.getKeyCode() == KeyEvent.VK_F) {
             AudioPlayer.play("/snakegame/Portal.wav");
         }
     }
-
+//</editor-fold>
+    
+//<editor-fold defaultstate="collapsed" desc="keyReleasedHandler">
+    
     @Override
     public void keyReleasedHandler(KeyEvent e) {
-
+        
     }
-
+//</editor-fold>
+    
+//<editor-fold defaultstate="collapsed" desc="environmentMouseClicked">
+    
     @Override
     public void environmentMouseClicked(MouseEvent e) {
-
+        
     }
+//</editor-fold>
 
+//<editor-fold defaultstate="collapsed" desc="paintEnvironment">
     @Override
     public void paintEnvironment(Graphics graphics) {
-
+        
         switch (screens) {
             case START:
-
+                
                 graphics.drawImage(startScreen, 0, 0, 970, 700, this);
-                graphics.setFont(new Font("Herculanum", Font.PLAIN, 42));
+                graphics.setFont(new Font("Valium", Font.PLAIN, 42));
+                // or use font "Herculanum"
                 graphics.drawString("Press space to start.", 40, 70);
-
+                
                 break;
-
+                
             case PLAY:
-
+                
                 graphics.drawImage(background, 0, 0, 1000, 800, this);
-
-                if (score != null) {
-                    score.drawScore(graphics);
-
-                }
+                graphics.setColor(Color.white);
+                
                 if (grid != null) {
                     grid.paintComponent(graphics);
                 }
-
+                
                 if (barriers != null) {
                     for (int i = 0; i < barriers.size(); i++) {
                         barriers.get(i).draw(graphics);
                     }
+                    
                     break;
                 }
                 if (casper != null) {
@@ -172,7 +174,8 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                     }
                 }
         }
-
+//</editor-fold>
+        
 //<editor-fold defaultstate="collapsed" desc="CellDataProviderIntf">
     }
 
@@ -201,17 +204,29 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 //<editor-fold defaultstate="collapsed" desc="MoveValidatorIntf">
     @Override
     public Point validateMove(Point proposedLocation) {
+
         if (proposedLocation.x < 0) {
-            System.out.println("LOST TO THE LEFT...");
-        } else if (proposedLocation.x >= grid.getColumns()) {
-            System.out.println("LOST TO THE RIGHT...");
-        } else if (proposedLocation.y >= grid.getRows()) {
-            System.out.println("LOST TO THE BOTTOM...");
+            proposedLocation.x = grid.getColumns() - 1;
+        } else if (proposedLocation.x > grid.getColumns() - 1) {
+            proposedLocation.x = 0;
         } else if (proposedLocation.y < 0) {
-            System.out.println("LOST TO THE TOP...");
+            proposedLocation.y = grid.getRows() - 1;
+        } else if (proposedLocation.y > grid.getRows() - 1) {
+            proposedLocation.y = 0;
         }
 
-        return checkIntersection(proposedLocation);
+//        if (proposedLocation.x < 0) {
+//            System.out.println("LOST TO THE LEFT...");
+//        } else if (proposedLocation.x >= grid.getColumns()) {
+//            System.out.println("LOST TO THE RIGHT...");
+//        } else if (proposedLocation.y >= grid.getRows()) {
+//            System.out.println("LOST TO THE BOTTOM...");
+//        } else if (proposedLocation.y < 0) {
+//            System.out.println("LOST TO THE TOP...");
+//        }
+
+        checkIntersection(proposedLocation);
+        return proposedLocation;
     }
 
     public Point checkIntersection(Point location) {
@@ -225,10 +240,12 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                     //stepped on an item!
                     //if POISON => subtract points
                     //if POTION => add points
-                    if (item.getType().equals(POISON_ITEM)) {
+                    if (item.getType().equals(Item.ITEM_TYPE_POISON)) {
                         System.out.println("SUBTRACTING....");
-                    } else if (item.getType().equals(POTION_ITEM)) {
+                        score.addPointValue(-100);
+                    } else if (item.getType().equals(Item.ITEM_TYPE_POTION)) {
                         System.out.println("ADDING..");
+                        score.addPointValue(+100);
                     }
                     //move item
                     item.setX(-1000);

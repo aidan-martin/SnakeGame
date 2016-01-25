@@ -5,6 +5,7 @@
  */
 package snakegame;
 
+import images.ResourceTools;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
@@ -32,10 +33,27 @@ public class Item {
         this.type = type;
         this.image = image;
         this.cellData = cellData;
+        
+        if (type.equals(Item.ITEM_TYPE_POISON)) {
+            image = ResourceTools.loadImageFromResource("snakegame/poison_bottle.png");
+        if (type.equals(Item.ITEM_TYPE_POTION)){
+            image = ResourceTools.loadImageFromResource("snakegame/potion.png");
+                    
+        }
+        if (type.equals(Item.ITEM_TYPE_PORTAL)){
+            image = ResourceTools.loadImageFromResource("snakegame/portal_1");
+        }
+        }
+        
     }
 //</editor-fold>
    
 //<editor-fold defaultstate="collapsed" desc="Properties">
+    
+    public static final String ITEM_TYPE_PORTAL = "PORTAL"; 
+    public static final String ITEM_TYPE_POTION = "POTION";
+    public static final String ITEM_TYPE_POISON = "POISON";
+            
     private int x, y;
     private String type;
     private Image image;

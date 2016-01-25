@@ -23,7 +23,7 @@ public class GhostCharacter {
     public void move() {
         int xNew = x;
         int yNew = y;
-        
+
         if (direction == Direction.LEFT) {
             xNew--;
         } else if (direction == Direction.RIGHT) {
@@ -37,7 +37,7 @@ public class GhostCharacter {
         Point newLoc = moveValidator.validateMove(new Point(xNew, yNew));
         x = newLoc.x;
         y = newLoc.y;
-        
+
     }
 
     public void draw(Graphics graphics) {
@@ -46,7 +46,7 @@ public class GhostCharacter {
                 cellData.getCellWidth(),
                 cellData.getCellHeight(),
                 null);
-        
+
     }
 
     public GhostCharacter(int x, int y, Direction direction, CellDataProviderIntf cellData, MoveValidatorIntf moveValidator) {
@@ -56,65 +56,63 @@ public class GhostCharacter {
         this.cellData = cellData;
         this.moveValidator = moveValidator;
 
-        
         ImageManager im = new ImageManager();
         im.addImage(GHOST_FRONT_01, ResourceTools.loadImageFromResource("snakegame/ghost_front1.png"));
         im.addImage(GHOST_FRONT_02, ResourceTools.loadImageFromResource("snakegame/ghost_front2.png"));
         im.addImage(GHOST_FRONT_03, ResourceTools.loadImageFromResource("snakegame/ghost_front3.png"));
-        
+
         im.addImage(GHOST_BACK_01, ResourceTools.loadImageFromResource("snakegame/ghost_back7.png"));
         im.addImage(GHOST_BACK_02, ResourceTools.loadImageFromResource("snakegame/ghost_back8.png"));
         im.addImage(GHOST_BACK_03, ResourceTools.loadImageFromResource("snakegame/ghost_back9.png"));
-        
+
         im.addImage(GHOST_LEFT_01, ResourceTools.loadImageFromResource("snakegame/ghost_left4.png"));
         im.addImage(GHOST_LEFT_02, ResourceTools.loadImageFromResource("snakegame/ghost_left5.png"));
         im.addImage(GHOST_LEFT_03, ResourceTools.loadImageFromResource("snakegame/ghost_left6.png"));
-        
+
         im.addImage(GHOST_RIGHT_01, ResourceTools.loadImageFromResource("snakegame/ghost_right10.png"));
         im.addImage(GHOST_RIGHT_02, ResourceTools.loadImageFromResource("snakegame/ghost_right11.png"));
         im.addImage(GHOST_RIGHT_03, ResourceTools.loadImageFromResource("snakegame/ghost_right12.png"));
-        
-        
+
         frontImages = new ArrayList<>();
         frontImages.add(GHOST_FRONT_01);
         frontImages.add(GHOST_FRONT_02);
-        frontImages.add(GHOST_FRONT_03); 
-        
+        frontImages.add(GHOST_FRONT_03);
+
         backImages = new ArrayList<>();
         backImages.add(GHOST_BACK_01);
         backImages.add(GHOST_BACK_02);
         backImages.add(GHOST_BACK_03);
-        
+
         leftImages = new ArrayList<>();
         leftImages.add(GHOST_LEFT_01);
         leftImages.add(GHOST_LEFT_02);
         leftImages.add(GHOST_LEFT_03);
-        
+
         rightImages = new ArrayList<>();
         rightImages.add(GHOST_RIGHT_01);
         rightImages.add(GHOST_RIGHT_02);
         rightImages.add(GHOST_RIGHT_03);
-                
+
         animator = new Animator(im, frontImages, 400);
     }
-    
+
     Animator animator;
-    
+
     private static final String GHOST_FRONT_01 = "GHOST_FRONT_01";
     private static final String GHOST_FRONT_02 = "GHOST_FRONT_03";
     private static final String GHOST_FRONT_03 = "GHOST_FRONT_03";
     private static ArrayList<String> frontImages;
-    
+
     private static final String GHOST_BACK_01 = "GHOST_BACK_01";
     private static final String GHOST_BACK_02 = "GHOST_BACK_02";
     private static final String GHOST_BACK_03 = "GHOST_BACK_03";
     private static ArrayList<String> backImages;
-    
+
     private static final String GHOST_LEFT_01 = "GHOST_LEFT_01";
     private static final String GHOST_LEFT_02 = "GHOST_LEFT_02";
     private static final String GHOST_LEFT_03 = "GHOST_LEFT_03";
     private static ArrayList<String> leftImages;
-    
+
     private static final String GHOST_RIGHT_01 = "GHOST_RIGHT_01";
     private static final String GHOST_RIGHT_02 = "GHOST_RIGHT_02";
     private static final String GHOST_RIGHT_03 = "GHOST_RIGHT_03";
@@ -125,15 +123,14 @@ public class GhostCharacter {
     private int y;
     private Direction direction;
     private Image image;
-    private Image sprite1, sprite2, sprite3, sprite4, sprite5, sprite6, 
-                  sprite7, sprite8, sprite9, sprite10, sprite11, sprite12;
+    private Image sprite1, sprite2, sprite3, sprite4, sprite5, sprite6,
+            sprite7, sprite8, sprite9, sprite10, sprite11, sprite12;
     private Point location;
-    
+
     private final CellDataProviderIntf cellData;
     private final MoveValidatorIntf moveValidator;
 //    private Point location;
 //    private CellDataProviderIntf cellData;
-
 
     /**
      * @return the x
@@ -152,10 +149,10 @@ public class GhostCharacter {
     /**
      * @return the y
      */
-    public int getY() {    
+    public int getY() {
         return y;
     }
-    
+
     /**
      * @param y the y to set
      */
@@ -175,7 +172,7 @@ public class GhostCharacter {
      */
     public void setDirection(Direction direction) {
         this.direction = direction;
-        
+
         if (direction == Direction.UP) {
             animator.setImageNames(backImages);
         } else if (direction == Direction.DOWN) {
