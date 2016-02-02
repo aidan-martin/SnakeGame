@@ -19,7 +19,7 @@ public class PointSystem {
     public void drawScore(Graphics graphics) {
         graphics.setColor(Color.BLACK);
         graphics.setFont(new Font("Herculanum", Font.BOLD, 40));
-        graphics.drawString("POINTS: " + getPointValue(), 30, 90);
+        graphics.drawString("POINTS: " + getPointValue(), 20, 40);
 
     }
 

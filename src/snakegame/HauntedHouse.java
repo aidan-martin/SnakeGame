@@ -28,12 +28,13 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     private final Grid grid;
     Image background;
     Image startScreen;
+    Image pauseMenu;
     private final PointSystem score;
     private ArrayList<Barrier> barriers;
     private final ArrayList<Item> items;
-    private Screen screens = Screen.START;
+    private Screen screen = Screen.START;
     private final GhostCharacter casper;
-
+    private Portal portal_01, portal_02;
 
     public HauntedHouse() {
         paused = true;
@@ -43,30 +44,34 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         score = new PointSystem();
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
         startScreen = ResourceTools.loadImageFromResource("snakegame/hauntedhouse2.jpg");
+        pauseMenu = ResourceTools.loadImageFromResource("snakegame/blackclouds_pause.jpg");
 
         items = new ArrayList<>();
         items.add(new Item(3, 7, Item.ITEM_TYPE_POISON, ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
         items.add(new Item(12, 5, Item.ITEM_TYPE_POTION, ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
-        items.add(new Item(5, 6, Item.ITEM_TYPE_PORTAL, ResourceTools.loadImageFromResource("snakegame/portal_1.png"), this));
-    }
-//<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
+//        items.add(new Item(5, 6, Item.ITEM_TYPE_PORTAL, ResourceTools.loadImageFromResource("snakegame/portal_1.png"), this));
     
+        portal_01 = new Portal(5, 9, this);
+        portal_02 = new Portal(5, 4, this);
+    }
+
+//<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
     @Override
     public void initializeEnvironment() {
     }
-    
-    private final int limit_SLOW = 8;
+
+    private final int limit_SLOW = 10;
     private final int limit_MEDIUM = 5;
     private final int limit_FAST = 3;
     private final int limit_EXTREME = 1;
-    
+    private final int limit_CRAZY = 0;
+
     private int counter;
     private int limit = limit_MEDIUM;
     private boolean paused = false;
 //</editor-fold>
-    
+
 //<editor-fold defaultstate="collapsed" desc="timerTaskHandler">
-    
     @Override
     public void timerTaskHandler() {
         if (!paused) {
@@ -81,15 +86,14 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         }
     }
 //</editor-fold>
-    
+
 //<editor-fold defaultstate="collapsed" desc="keyPressedHandler">
-    
     @Override
     public void keyPressedHandler(KeyEvent e) {
-        
+
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             casper.setDirection(Direction.LEFT);
-            
+
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             casper.setDirection(Direction.DOWN);
         } else if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -104,78 +108,100 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
             this.limit = limit_FAST;
         } else if (e.getKeyCode() == KeyEvent.VK_4) {
             this.limit = limit_EXTREME;
-            
+        } else if (e.getKeyCode() == KeyEvent.VK_5) {
+            this.limit = limit_CRAZY;
+
         } else if (e.getKeyCode() == KeyEvent.VK_P) {
-            this.paused = !this.paused;
-        }
-        
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            screens = Screen.PLAY;
+            this.paused = !this.paused;    
+        } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            screen = Screen.PLAY;
+        } else if (e.getKeyCode() == KeyEvent.VK_M) {
+            screen = Screen.MENU;
             
-        }
-        if (e.getKeyCode() == KeyEvent.VK_F) {
+        } else if (e.getKeyCode() == KeyEvent.VK_F) {
             AudioPlayer.play("/snakegame/Portal.wav");
         }
     }
 //</editor-fold>
-    
+
 //<editor-fold defaultstate="collapsed" desc="keyReleasedHandler">
-    
     @Override
     public void keyReleasedHandler(KeyEvent e) {
-        
+
     }
 //</editor-fold>
-    
+
 //<editor-fold defaultstate="collapsed" desc="environmentMouseClicked">
-    
     @Override
     public void environmentMouseClicked(MouseEvent e) {
-        
+
     }
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="paintEnvironment">
     @Override
     public void paintEnvironment(Graphics graphics) {
-        
-        switch (screens) {
+
+        switch (screen) {
             case START:
-                
+
                 graphics.drawImage(startScreen, 0, 0, 970, 700, this);
-                graphics.setFont(new Font("Valium", Font.PLAIN, 42));
-                // or use font "Herculanum"
-                graphics.drawString("Press space to start.", 40, 70);
-                
+                graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 20));
+                //find a nice font to use
+                graphics.drawString("Press space to Start...", 50, 150);
+                graphics.drawString("Press M for Menu...", 50, 170);
+
                 break;
-                
+
+            case MENU:
+
+                graphics.drawImage(pauseMenu, 0, 0, 1000, 800, this);
+                graphics.drawString("Difficulty:", 50, 150);
+                graphics.drawString("Easy (1) - Medium (2) - Hard (3) - Extreme (4) - Crazy (5)", 50, 170);
+                graphics.drawString("(Space to Start)", 50, 190);
+                graphics.drawString("(P to Pause)", 50, 210);
+                break;
+
             case PLAY:
-                
+
                 graphics.drawImage(background, 0, 0, 1000, 800, this);
                 graphics.setColor(Color.white);
-                
+
                 if (grid != null) {
                     grid.paintComponent(graphics);
                 }
-                
+
                 if (barriers != null) {
                     for (int i = 0; i < barriers.size(); i++) {
                         barriers.get(i).draw(graphics);
                     }
-                    
-                    break;
                 }
+                
                 if (casper != null) {
                     casper.draw(graphics);
                 }
+                
                 if (items != null) {
                     for (int i = 0; i < items.size(); i++) {
                         items.get(i).draw(graphics);
                     }
+                    if (score != null) {
+                        score.drawScore(graphics);
+                    }
                 }
+                
+                if (portal_01 != null) {
+                    portal_01.draw(graphics);
+                }
+
+                if (portal_02 != null) {
+                    portal_02.draw(graphics);
+                }
+            
+            
         }
 //</editor-fold>
-        
+
 //<editor-fold defaultstate="collapsed" desc="CellDataProviderIntf">
     }
 
@@ -214,32 +240,24 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         } else if (proposedLocation.y > grid.getRows() - 1) {
             proposedLocation.y = 0;
         }
-
-//        if (proposedLocation.x < 0) {
-//            System.out.println("LOST TO THE LEFT...");
-//        } else if (proposedLocation.x >= grid.getColumns()) {
-//            System.out.println("LOST TO THE RIGHT...");
-//        } else if (proposedLocation.y >= grid.getRows()) {
-//            System.out.println("LOST TO THE BOTTOM...");
-//        } else if (proposedLocation.y < 0) {
-//            System.out.println("LOST TO THE TOP...");
-//        }
-
         checkIntersection(proposedLocation);
+        
+        //check the portals
+        // if landed on portal #1, then move to portal #2, and vice versa
+        if (proposedLocation.equals(portal_01.getLocation())) {
+            proposedLocation = portal_02.getLocation();
+        } else if (proposedLocation.equals(portal_02.getLocation())) {
+            proposedLocation = portal_01.getLocation();
+        }  
+        
         return proposedLocation;
     }
 
     public Point checkIntersection(Point location) {
-        //check if casper is in same cell as item
-        //if casper runs into items, items disappear (collect)
-        // get points? lose points?
         // portal - adjust location?
         if (items != null) {
             for (Item item : items) {
                 if (item.getLocation().equals(location)) {
-                    //stepped on an item!
-                    //if POISON => subtract points
-                    //if POTION => add points
                     if (item.getType().equals(Item.ITEM_TYPE_POISON)) {
                         System.out.println("SUBTRACTING....");
                         score.addPointValue(-100);
@@ -258,3 +276,23 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 //</editor-fold>
 
 }
+
+//make portals work, have two on the screen
+
+//randomly generate potions and poison on screen
+    //more poison -- harder to get points
+
+//how should the ghost die?
+    //an enemy? 
+        //something to follow Casper after he reaches 500* points?
+    //lives?
+        //hearts, falls off the screen loses a life
+
+//SOUND!!! Make a sound manager
+    //play music
+    //start menu music
+    //sound effects when potion/poison picked up
+    //sound effects for portal
+
+//if reaches 3000 points, casper poelen's face appears **
+    
