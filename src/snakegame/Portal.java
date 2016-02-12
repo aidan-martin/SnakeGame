@@ -25,7 +25,6 @@ public class Portal {
                 getCellData().getSystemCoordY(getX(), getY()),
                 getCellData().getCellWidth(),
                 getCellData().getCellHeight(), null);
-        System.out.println("drawing portal");
     }
 //</editor-fold>
     
@@ -49,7 +48,7 @@ public class Portal {
         portalImageNames.add(PORTAL_3);
         portalImageNames.add(PORTAL_2);
         
-        animator = new Animator(im, portalImageNames, 100);
+        animator = new Animator(im, portalImageNames, 300);
     }
 //</editor-fold>
     

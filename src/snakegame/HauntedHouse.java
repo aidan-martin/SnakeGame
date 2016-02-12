@@ -6,6 +6,10 @@
 package snakegame;
 
 import audio.AudioPlayer;
+import audio.Playlist;
+import audio.SoundManager;
+import audio.Source;
+import audio.Track;
 import environment.Direction;
 import environment.Environment;
 import grid.Grid;
@@ -39,7 +43,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     public HauntedHouse() {
         paused = true;
 
-        grid = new Grid(15, 15, 35, 35, new Point(150, 50), Color.BLACK);
+        grid = new Grid(23, 15, 45, 45, new Point(150, 50), Color.BLACK);
         casper = new GhostCharacter(3, 4, Direction.DOWN, this, this);
         score = new PointSystem();
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
@@ -49,12 +53,35 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         items = new ArrayList<>();
         items.add(new Item(3, 7, Item.ITEM_TYPE_POISON, ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
         items.add(new Item(12, 5, Item.ITEM_TYPE_POTION, ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
-//        items.add(new Item(5, 6, Item.ITEM_TYPE_PORTAL, ResourceTools.loadImageFromResource("snakegame/portal_1.png"), this));
     
         portal_01 = new Portal(5, 9, this);
-        portal_02 = new Portal(5, 4, this);
+        portal_02 = new Portal(8, 4, this);
+        
+        setUpSound();
+        
+//        soundManager.play(SOUND_INTRO, -1);
+        soundManager.play(SOUND_GAMEPLAY, -1);
+        soundManager.play(SOUND_PORTAL, -1);
+    }
+    
+    SoundManager soundManager;
+    private static final String SOUND_GAMEPLAY = "GamePlay";
+    private static final String SOUND_PORTAL = "Portal";
+    private static final String SOUND_INTRO = "Intro";
+
+    private void setUpSound() {
+        //set up list of tracks in a playlist
+        ArrayList<Track> tracks = new ArrayList<>();
+        tracks.add(new Track(SOUND_GAMEPLAY, Source.RESOURCE, "/snakegame/gameplay.wav"));
+        tracks.add(new Track(SOUND_PORTAL, Source.RESOURCE, "/snakegame/portal.wav"));
+        tracks.add(new Track(SOUND_INTRO, Source.RESOURCE, "/snakegame/intro.wav"));
+
+        Playlist playlist = new Playlist(tracks);
+        //pass playlist to a soundmanager
+        soundManager = new SoundManager(playlist);
     }
 
+    
 //<editor-fold defaultstate="collapsed" desc="initializeEnvironment">
     @Override
     public void initializeEnvironment() {
@@ -93,6 +120,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             casper.setDirection(Direction.LEFT);
+            AudioPlayer.play(SOUND_INTRO);
 
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             casper.setDirection(Direction.DOWN);
@@ -115,12 +143,13 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
             this.paused = !this.paused;    
         } else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
             screen = Screen.PLAY;
+            soundManager.stop(SOUND_INTRO);
+            soundManager.play(SOUND_GAMEPLAY);
         } else if (e.getKeyCode() == KeyEvent.VK_M) {
             screen = Screen.MENU;
             
-        } else if (e.getKeyCode() == KeyEvent.VK_F) {
-            AudioPlayer.play("/snakegame/Portal.wav");
-        }
+        } 
+//           
     }
 //</editor-fold>
 
@@ -144,18 +173,20 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
         switch (screen) {
             case START:
-
-                graphics.drawImage(startScreen, 0, 0, 970, 700, this);
-                graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 20));
+                
+                graphics.drawImage(startScreen, 0, 0, 1300, 700, this);
+                graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 30));
                 //find a nice font to use
-                graphics.drawString("Press space to Start...", 50, 150);
-                graphics.drawString("Press M for Menu...", 50, 170);
+                graphics.drawString("CASPER the Friendly Ghost?", 50, 110);
+                graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 20));
+                graphics.drawString("Press space to Start...", 50, 130);
+                graphics.drawString("Press M for Menu/Instructions...", 50, 150);
 
                 break;
 
             case MENU:
 
-                graphics.drawImage(pauseMenu, 0, 0, 1000, 800, this);
+                graphics.drawImage(pauseMenu, 0, 0, 1300, 800, this);
                 graphics.drawString("Difficulty:", 50, 150);
                 graphics.drawString("Easy (1) - Medium (2) - Hard (3) - Extreme (4) - Crazy (5)", 50, 170);
                 graphics.drawString("(Space to Start)", 50, 190);
@@ -163,9 +194,11 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                 break;
 
             case PLAY:
-
-                graphics.drawImage(background, 0, 0, 1000, 800, this);
-                graphics.setColor(Color.white);
+                
+                graphics.drawImage(background, 0, 0, 1300, 800, this);
+                graphics.setColor(Color.BLACK);
+                graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 20));
+                graphics.drawString("M / P", 23, 70);
 
                 if (grid != null) {
                     grid.paintComponent(graphics);
@@ -277,7 +310,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
 }
 
-//make portals work, have two on the screen
+//randomly generate portals, after gone threw them, move to another location
 
 //randomly generate potions and poison on screen
     //more poison -- harder to get points
@@ -289,7 +322,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         //hearts, falls off the screen loses a life
 
 //SOUND!!! Make a sound manager
-    //play music
+    //gameplay music
     //start menu music
     //sound effects when potion/poison picked up
     //sound effects for portal
