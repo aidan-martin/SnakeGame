@@ -26,23 +26,40 @@ public class Item {
     }
 
 //<editor-fold defaultstate="collapsed" desc="Constructors">
-    public Item(int x, int y, String type, Image image, CellDataProviderIntf cellData) {
+    public Item(Point location, String type, CellDataProviderIntf cellData) {
+        this.x = location.x;
+        this.y = location.y;
+        this.type = type;
+        this.cellData = cellData;
+        setImage(type);
+    }
+
+    public Item(int x, int y, String type, CellDataProviderIntf cellData) {
         this.x = x;
         this.y = y;
         this.type = type;
-        this.image = image;
         this.cellData = cellData;
+        setImage(type);
+    }
 
-        if (type.equals(Item.ITEM_TYPE_POISON)) {
-            image = ResourceTools.loadImageFromResource("snakegame/poison_bottle.png");
-        } else if (type.equals(Item.ITEM_TYPE_POTION)) {
-            image = ResourceTools.loadImageFromResource("snakegame/potion.png");
-        } else if (type.equals(Item.ITEM_TYPE_PORTAL)) {
-            image = ResourceTools.loadImageFromResource("snakegame/portal_1.png");
+    private void setImage(String type) {
+        switch (type) {
+            case Item.ITEM_TYPE_POISON:
+                image = ResourceTools.loadImageFromResource("snakegame/poison_bottle.png");
+                break;
+                
+            case Item.ITEM_TYPE_PORTAL:
+                image = ResourceTools.loadImageFromResource("snakegame/portal_1.png");
+                break;
+                
+            default:
+            case Item.ITEM_TYPE_POTION:
+                image = ResourceTools.loadImageFromResource("snakegame/potion.png");
+                break; 
         }
     }
-//</editor-fold>
 
+//</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="Properties">
     public static final String ITEM_TYPE_PORTAL = "PORTAL";
     public static final String ITEM_TYPE_POTION = "POTION";

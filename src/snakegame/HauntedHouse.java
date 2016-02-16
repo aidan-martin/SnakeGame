@@ -38,12 +38,12 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
     private final ArrayList<Item> items;
     private Screen screen = Screen.START;
     private final GhostCharacter casper;
-    private Portal portal_01, portal_02;
+    private final Portal portal_01, portal_02;
 
     public HauntedHouse() {
         paused = true;
 
-        grid = new Grid(23, 15, 45, 45, new Point(150, 50), Color.BLACK);
+        grid = new Grid(23, 12, 45, 45, new Point(150, 50), Color.BLACK);
         casper = new GhostCharacter(3, 4, Direction.DOWN, this, this);
         score = new PointSystem();
         background = ResourceTools.loadImageFromResource("snakegame/blackclouds.jpg");
@@ -51,31 +51,46 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         pauseMenu = ResourceTools.loadImageFromResource("snakegame/blackclouds_pause.jpg");
 
         items = new ArrayList<>();
-        items.add(new Item(3, 7, Item.ITEM_TYPE_POISON, ResourceTools.loadImageFromResource("snakegame/poison_bottle.png"), this));
-        items.add(new Item(12, 5, Item.ITEM_TYPE_POTION, ResourceTools.loadImageFromResource("snakegame/potion.png"), this));
+        for (int i = 0; i < 8; i++) {
+            items.add(new Item(getRandomGridLocation(), Item.ITEM_TYPE_POISON, this));
+        }
+        
+        for (int i = 0; i < 5; i++) {
+            items.add(new Item(getRandomGridLocation(), Item.ITEM_TYPE_POTION, this));
+        }
     
         portal_01 = new Portal(5, 9, this);
         portal_02 = new Portal(8, 4, this);
         
         setUpSound();
         
-//        soundManager.play(SOUND_INTRO, -1);
-        soundManager.play(SOUND_GAMEPLAY, -1);
-        soundManager.play(SOUND_PORTAL, -1);
+        soundManager.play(SOUND_INTRO, -1);
+    }
+    
+    
+    public int getRandom(int min, int max){
+        return (int) (min + (Math.random() * (max -  min + 1)));
+    }
+    
+    public Point getRandomGridLocation(){
+        return new Point(getRandom(0, grid.getColumns()-1), getRandom(0, grid.getRows()-1));
     }
     
     SoundManager soundManager;
     private static final String SOUND_GAMEPLAY = "GamePlay";
     private static final String SOUND_PORTAL = "Portal";
     private static final String SOUND_INTRO = "Intro";
+    private static final String SOUND_POTION = "Potion";
 
     private void setUpSound() {
         //set up list of tracks in a playlist
         ArrayList<Track> tracks = new ArrayList<>();
-        tracks.add(new Track(SOUND_GAMEPLAY, Source.RESOURCE, "/snakegame/gameplay.wav"));
+        tracks.add(new Track(SOUND_GAMEPLAY, Source.RESOURCE, "/snakegame/Gameplay.wav"));
         tracks.add(new Track(SOUND_PORTAL, Source.RESOURCE, "/snakegame/portal.wav"));
-        tracks.add(new Track(SOUND_INTRO, Source.RESOURCE, "/snakegame/intro.wav"));
-
+        tracks.add(new Track(SOUND_INTRO, Source.RESOURCE, "/snakegame/Intro.wav"));
+        tracks.add(new Track(SOUND_POTION, Source.RESOURCE, "/snakegame/potion.wav"));
+        //***** PUT POTION ON PICK UP
+        
         Playlist playlist = new Playlist(tracks);
         //pass playlist to a soundmanager
         soundManager = new SoundManager(playlist);
@@ -120,8 +135,6 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             casper.setDirection(Direction.LEFT);
-            AudioPlayer.play(SOUND_INTRO);
-
         } else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
             casper.setDirection(Direction.DOWN);
         } else if (e.getKeyCode() == KeyEvent.VK_UP) {
@@ -180,7 +193,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                 graphics.drawString("CASPER the Friendly Ghost?", 50, 110);
                 graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 20));
                 graphics.drawString("Press space to Start...", 50, 130);
-                graphics.drawString("Press M for Menu/Instructions...", 50, 150);
+                graphics.drawString("Press M for Menu", 50, 150);
 
                 break;
 
@@ -190,7 +203,7 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                 graphics.drawString("Difficulty:", 50, 150);
                 graphics.drawString("Easy (1) - Medium (2) - Hard (3) - Extreme (4) - Crazy (5)", 50, 170);
                 graphics.drawString("(Space to Start)", 50, 190);
-                graphics.drawString("(P to Pause)", 50, 210);
+                graphics.drawString("(P to Pause/Play)", 50, 210);
                 break;
 
             case PLAY:
@@ -231,6 +244,15 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                     portal_02.draw(graphics);
                 }
             
+//            case DEATH:
+//                
+//                graphics.drawImage(pauseMenu, 0, 0, 1300, 800, this);
+//                graphics.setColor(Color.BLACK);
+//                graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 50));
+//                graphics.drawString("GAME OVER", 500, 400);
+//                
+//                break;
+                
             
         }
 //</editor-fold>
@@ -275,31 +297,38 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         }
         checkIntersection(proposedLocation);
         
-        //check the portals
         // if landed on portal #1, then move to portal #2, and vice versa
+        //after gone through portals, move the portals to another random location
+        
         if (proposedLocation.equals(portal_01.getLocation())) {
             proposedLocation = portal_02.getLocation();
+            soundManager.play(SOUND_PORTAL);
+            portal_01.setLocation(getRandomGridLocation());
         } else if (proposedLocation.equals(portal_02.getLocation())) {
             proposedLocation = portal_01.getLocation();
-        }  
+            soundManager.play(SOUND_PORTAL);
+            portal_02.setLocation(getRandomGridLocation());
+
+        } 
         
         return proposedLocation;
     }
 
     public Point checkIntersection(Point location) {
-        // portal - adjust location?
+        
+        //randomly generate items all over screen
+        
         if (items != null) {
             for (Item item : items) {
                 if (item.getLocation().equals(location)) {
                     if (item.getType().equals(Item.ITEM_TYPE_POISON)) {
-                        System.out.println("SUBTRACTING....");
                         score.addPointValue(-100);
                     } else if (item.getType().equals(Item.ITEM_TYPE_POTION)) {
-                        System.out.println("ADDING..");
                         score.addPointValue(+100);
                     }
                     //move item
-                    item.setX(-1000);
+                    item.setLocation(getRandomGridLocation());
+
                     //make a funny noise
                 }
             }
@@ -322,10 +351,6 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
         //hearts, falls off the screen loses a life
 
 //SOUND!!! Make a sound manager
-    //gameplay music
-    //start menu music
     //sound effects when potion/poison picked up
-    //sound effects for portal
 
 //if reaches 3000 points, casper poelen's face appears **
-    

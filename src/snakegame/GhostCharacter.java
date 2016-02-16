@@ -117,6 +117,12 @@ public class GhostCharacter {
     private static final String GHOST_RIGHT_02 = "GHOST_RIGHT_02";
     private static final String GHOST_RIGHT_03 = "GHOST_RIGHT_03";
     private static ArrayList<String> rightImages;
+    
+    
+    private void health(){
+        
+    }
+    
 
 //<editor-fold defaultstate="collapsed" desc="Properties">
     private int x;

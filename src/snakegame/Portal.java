@@ -107,6 +107,14 @@ public class Portal {
     }
 
     /**
+     * @param x the x to set
+     */
+    public void setLocation(Point location) {
+        this.x = location.x;
+        this.y = location.y;
+    }
+
+    /**
      * @return the location
      */
     public Point getLocation() {
