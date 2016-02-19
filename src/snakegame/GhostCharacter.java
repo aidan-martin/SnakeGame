@@ -56,6 +56,7 @@ public class GhostCharacter {
         this.cellData = cellData;
         this.moveValidator = moveValidator;
 
+       
         ImageManager im = new ImageManager();
         im.addImage(GHOST_FRONT_01, ResourceTools.loadImageFromResource("snakegame/ghost_front1.png"));
         im.addImage(GHOST_FRONT_02, ResourceTools.loadImageFromResource("snakegame/ghost_front2.png"));

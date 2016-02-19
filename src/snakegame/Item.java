@@ -51,6 +51,10 @@ public class Item {
             case Item.ITEM_TYPE_PORTAL:
                 image = ResourceTools.loadImageFromResource("snakegame/portal_1.png");
                 break;
+               
+            case Item.ITEM_TYPE_COIN:
+                image = ResourceTools.loadImageFromResource("snakegame/logo.png");
+                break;
                 
             default:
             case Item.ITEM_TYPE_POTION:
@@ -60,10 +64,12 @@ public class Item {
     }
 
 //</editor-fold>
+    
 //<editor-fold defaultstate="collapsed" desc="Properties">
     public static final String ITEM_TYPE_PORTAL = "PORTAL";
     public static final String ITEM_TYPE_POTION = "POTION";
     public static final String ITEM_TYPE_POISON = "POISON";
+    public static final String ITEM_TYPE_COIN = "COIN";
 
     private int x, y;
     private String type;
