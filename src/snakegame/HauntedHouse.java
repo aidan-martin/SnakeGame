@@ -229,8 +229,8 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                 graphics.drawImage(background, 0, 0, 1300, 800, this);
                 graphics.setColor(Color.BLACK);
                 graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 20));
-                graphics.drawString("Menu (M)", 23, 70);
-                graphics.drawString("Pause/Play (P)", 23, 80);
+                graphics.drawString("Menu (M)", 10, 70);
+                graphics.drawString("Pause/Play(P)", 10, 90);
 
                 if (grid != null) {
                     grid.paintComponent(graphics);
@@ -277,9 +277,9 @@ class HauntedHouse extends Environment implements CellDataProviderIntf, MoveVali
                 graphics.drawImage(pauseMenu, 0, 0, 1300, 800, this);
                 graphics.setColor(Color.BLACK);
                 graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 50));
-                graphics.drawString("GAME OVER", 500, 400);
+                graphics.drawString("GAME OVER", 480, 380);
                 graphics.setFont(new Font("Letter Gothic Std", Font.BOLD, 25));
-                graphics.drawString("SCORE: " + score.getPointValue(), 500, 300);
+                graphics.drawString("SCORE: " + score.getPointValue(), 550, 300);
 
                 break;
         }
